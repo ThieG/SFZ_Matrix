@@ -3,11 +3,6 @@
 #include "LED_Matrix_Ansteuerung.h"
 
 
-byte Zeile = 0;
-
-Frame  AktuelleAnzeige; // & buffer
-
-
 // col[xx] of leds - anodes
 // these are the arduino pins assigned to each column
 int SpaltenPins[DIM] =  {7, 8, 11,12,13};
@@ -17,20 +12,21 @@ int SpaltenPins[DIM] =  {7, 8, 11,12,13};
 int ZeilenPins[DIM] = {2,3,4,5,6}; 
 
 
-const Frame IdleFrame[1u] PROGMEM = {
-{B10001,
+const byte IdleFrame[DIM] = {
+ B10001,
  B01010,
  B00100,
  B01010,
- B10001}
+ B10001
 };
 
-const Frame blankFrame[1u] PROGMEM =
-{B00000,
+const byte blankFrame[DIM] = {
  B00000,
  B00000,
  B00000,
- B00000};
+ B00000,
+ B00000
+};
 
 
 /*------------------------------------------------------------------------------------------------*/
@@ -41,7 +37,7 @@ const Frame blankFrame[1u] PROGMEM =
 *            spalten[] und zeilen[] als Ausgang definiert.
 */
 /*------------------------------------------------------------------------------------------------*/
-void initMatrix(void)
+void LED_Matrix::begin(void)
 {
  
   // sets the pins as output
@@ -67,12 +63,9 @@ void initMatrix(void)
 *            Mit dieser Funktion werden alle LEDs der Matrix ausgeschalten.
 */
 /*------------------------------------------------------------------------------------------------*/
-void clearMatrix(void) {
-  setFrame(blankFrame, 0, 1, 1);
+void LED_Matrix::clear(void) {
+  setFrame(blankFrame);
 }
-
-
-
 
 /*------------------------------------------------------------------------------------------------*/
 /*!
@@ -82,11 +75,13 @@ void clearMatrix(void) {
 *            die Spalten und Zeilen Pins für die aktuelle Anzeige.
 */
 /*------------------------------------------------------------------------------------------------*/
-void setFrame(const Frame* FrameSet, int idx, int Cnt, int Speed) 
+void LED_Matrix::setFrame(const byte* FrameSet) 
 {  
   for (int i = 0; i < DIM ; i++)
   {
-    AktuelleAnzeige[i] = pgm_read_byte_near((&FrameSet[idx][i])); // Necessary casts and dereferencing, just copy.
+    AktuelleAnzeige[i] = FrameSet[i];
+    byte dings = AktuelleAnzeige[i] | B10000000;
+    Serial.println(dings, BIN);
   }
 }
 
@@ -102,7 +97,7 @@ void setFrame(const Frame* FrameSet, int idx, int Cnt, int Speed)
 *            die Spalten und Zeilen Pins für die aktuelle Anzeige.
 */
 /*------------------------------------------------------------------------------------------------*/
-void updateMatrix(void) 
+void LED_Matrix::refresh(void) 
 {
   /* Ersteinmal die vorherige Zeile ausschalten. */
   digitalWrite(ZeilenPins[Zeile], HIGH);  

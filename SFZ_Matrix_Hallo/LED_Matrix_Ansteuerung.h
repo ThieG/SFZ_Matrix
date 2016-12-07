@@ -9,11 +9,17 @@
 typedef byte Frame[DIM];
 
 
+class LED_Matrix {
+  private:
+    byte AktuelleAnzeige[DIM];
+    byte Zeile;
 
-void initMatrix(void);
-void clearMatrix(void);
+  public:
+    void begin(void);
+    void clear(void);
+    void setFrame(const byte* newFrame);
 
-void setFrame(const Frame* FrameSet, int idx, int Cnt, int Speed);
-void updateMatrix(void);
+    void refresh(void);
+};
 
 #endif

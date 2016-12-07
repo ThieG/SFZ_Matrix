@@ -1,5 +1,5 @@
 #define ABC_FRAME_CNT 30
-const Frame AbcFrames[ABC_FRAME_CNT] PROGMEM = {
+const byte AbcFrames[ABC_FRAME_CNT][DIM] = {
 {B01100,
  B10010,
  B10010,

@@ -24,8 +24,10 @@
 #define BUTTON_PIN      A0
 #define LED_UPDATE_MATRIX_ZYKLUS_MS 1u
 
-int nextUpdateMatrix = 0u;
-int nextTestAnzeigeUpdate = 0u;
+LED_Matrix Matrix;
+
+unsigned long nextUpdateMatrix = 0u;
+unsigned long nextTestAnzeigeUpdate = 0u;
 int nextTestAnzeigeIndex = 0u;
 
 /*------------------------------------------------------------------------------------------------*/
@@ -39,8 +41,12 @@ int nextTestAnzeigeIndex = 0u;
 /*------------------------------------------------------------------------------------------------*/
 void setup() {
 
-  initMatrix();
-  clearMatrix();
+  Serial.begin(9600);
+  
+  Matrix.begin();
+  Matrix.clear();
+
+  Serial.println("Hallo erst mal!");
 
   pinMode(BUTTON_PIN, INPUT);
   digitalWrite(BUTTON_PIN, HIGH);  // set pullup on analog pin 0 
@@ -55,16 +61,24 @@ void setup() {
 /*------------------------------------------------------------------------------------------------*/
 void loop() {
 
-  int systemZeit = millis();
+  unsigned long systemZeit = millis();
   if (systemZeit > nextUpdateMatrix) {
     nextUpdateMatrix = systemZeit + LED_UPDATE_MATRIX_ZYKLUS_MS;
-    updateMatrix();
+    Matrix.refresh();
   }
   
   if (systemZeit > nextTestAnzeigeUpdate) {
-    nextTestAnzeigeUpdate = systemZeit + 2000u;
+    nextTestAnzeigeUpdate = systemZeit + 5000u;
 
-    setFrame(&AbcFrames[nextTestAnzeigeIndex], 0, 1, 1);
+    Serial.print("Schreibe Zeichen: ");
+    Serial.println(nextTestAnzeigeIndex);
+    for(byte i=0u; i<DIM;i++) {
+      byte dings = AbcFrames[nextTestAnzeigeIndex][i] | B10000000;
+      Serial.println(dings, BIN);
+    }
+    Serial.println("--------------");
+    
+    Matrix.setFrame(AbcFrames[nextTestAnzeigeIndex]);
     nextTestAnzeigeIndex++;
     if (nextTestAnzeigeIndex >= ABC_FRAME_CNT){
       nextTestAnzeigeIndex = 0u;
