@@ -3,22 +3,18 @@
 
 
 
-#define DIM 5 // x/y dimension - 5x5 matrix
-#define DIM1 (DIM-1)
-
-typedef byte Frame[DIM];
-
+#define MARTIX_DIM   5 /* x/y dimension - 5x5 matrix */
 
 class LED_Matrix {
   private:
-    byte AktuelleAnzeige[DIM];
+    byte AktuelleAnzeige[MARTIX_DIM];
     byte Zeile;
 
   public:
     void begin(void);
     void clear(void);
     void setFrame(const byte* newFrame);
-
+    void moveFrame(byte x, byte y);
     void refresh(void);
 };
 

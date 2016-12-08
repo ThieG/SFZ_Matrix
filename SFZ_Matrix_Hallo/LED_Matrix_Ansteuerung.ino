@@ -5,14 +5,14 @@
 
 // col[xx] of leds - anodes
 // these are the arduino pins assigned to each column
-int SpaltenPins[DIM] =  {7, 8, 11,12,13};
+int SpaltenPins[MARTIX_DIM] =  {7, 8, 11,12,13};
 
 // row[xx] of leds - cathodes
 // these are the arduino pins assigned to each row
-int ZeilenPins[DIM] = {2,3,4,5,6}; 
+int ZeilenPins[MARTIX_DIM] = {2,3,4,5,6}; 
 
 
-const byte IdleFrame[DIM] = {
+const byte IdleFrame[MARTIX_DIM] = {
  B10001,
  B01010,
  B00100,
@@ -20,7 +20,7 @@ const byte IdleFrame[DIM] = {
  B10001
 };
 
-const byte blankFrame[DIM] = {
+const byte blankFrame[MARTIX_DIM] = {
  B00000,
  B00000,
  B00000,
@@ -41,17 +41,17 @@ void LED_Matrix::begin(void)
 {
  
   // sets the pins as output
-  for (int i = 0; i < DIM; i++) {
+  for (int i = 0; i < MARTIX_DIM; i++) {
     pinMode(SpaltenPins[i], OUTPUT);
     pinMode(ZeilenPins[i], OUTPUT);
   }
 
   // set up cols and rows (set display to dark)
-  for (int i = 0; i < DIM; i++) {
+  for (int i = 0; i < MARTIX_DIM; i++) {
     digitalWrite(SpaltenPins[i], LOW);
   }
 
-  for (int i = 0; i < DIM; i++) {
+  for (int i = 0; i < MARTIX_DIM; i++) {
     digitalWrite(ZeilenPins[i], HIGH);
   }
 }
@@ -77,17 +77,25 @@ void LED_Matrix::clear(void) {
 /*------------------------------------------------------------------------------------------------*/
 void LED_Matrix::setFrame(const byte* FrameSet) 
 {  
-  for (int i = 0; i < DIM ; i++)
-  {
-    AktuelleAnzeige[i] = FrameSet[i];
-    byte dings = AktuelleAnzeige[i] | B10000000;
-    Serial.println(dings, BIN);
+  for (int i = 0; i < MARTIX_DIM ; i++) {
+    AktuelleAnzeige[i] = FrameSet[i];    
   }
 }
 
-
-
-
+void LED_Matrix::moveFrame(byte x, byte y)
+{
+  for (int i = 0; i < MARTIX_DIM ; i++) {
+    if(x > 0u) {
+      byte tempZeile = (AktuelleAnzeige[i] & B00011111);
+      for (byte i=0u; i<=x; i++){
+        byte shiftBit = tempZeile & 1u; 
+        tempZeile >>= 1u;
+        tempZeile |= (shiftBit << MARTIX_DIM);
+      }
+      AktuelleAnzeige[i] = tempZeile;
+    }
+  }
+}
 
 /*------------------------------------------------------------------------------------------------*/
 /*!
@@ -103,17 +111,17 @@ void LED_Matrix::refresh(void)
   digitalWrite(ZeilenPins[Zeile], HIGH);  
 
   /* Dann, die neue Zeile anschauen, bzw. wieder die erste Zeile.... */
-  if (++Zeile == DIM) {
+  if (++Zeile == MARTIX_DIM) {
     Zeile = 0u;
   }
 
   /* Aktuelle Spalte LED ein/aus schalten .... */
   byte Spalte = AktuelleAnzeige[Zeile];
-  for (int j=0u; j<DIM; j++) {
+  for (int j=0u; j<MARTIX_DIM; j++) {
     if ((Spalte >> j) & 1u){
-      digitalWrite(SpaltenPins[j],HIGH); 
+      digitalWrite(SpaltenPins[j], HIGH); 
     } else {
-      digitalWrite(SpaltenPins[j],LOW);
+      digitalWrite(SpaltenPins[j], LOW);
     }
   }
 

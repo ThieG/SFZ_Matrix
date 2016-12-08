@@ -17,18 +17,24 @@
 #include <EEPROM.h>
 
 #include "LED_Matrix_Ansteuerung.h"
-#include "ABC.h"
-#include "Zahlen.h"
-
 
 #define BUTTON_PIN      A0
 #define LED_UPDATE_MATRIX_ZYKLUS_MS 1u
+#define LED_WECHSEL_ANZEIGE_MS  5000u
 
 LED_Matrix Matrix;
 
 unsigned long nextUpdateMatrix = 0u;
 unsigned long nextTestAnzeigeUpdate = 0u;
-int nextTestAnzeigeIndex = 0u;
+
+
+const byte TestFrame[MARTIX_DIM] = {
+ B00100,
+ B00100,
+ B11011,
+ B00100,
+ B00100
+};
 
 /*------------------------------------------------------------------------------------------------*/
 /*!
@@ -50,6 +56,8 @@ void setup() {
 
   pinMode(BUTTON_PIN, INPUT);
   digitalWrite(BUTTON_PIN, HIGH);  // set pullup on analog pin 0 
+
+  randomSeed(analogRead(1u));
 }
 
 /*------------------------------------------------------------------------------------------------*/
@@ -68,21 +76,14 @@ void loop() {
   }
   
   if (systemZeit > nextTestAnzeigeUpdate) {
-    nextTestAnzeigeUpdate = systemZeit + 5000u;
-
-    Serial.print("Schreibe Zeichen: ");
-    Serial.println(nextTestAnzeigeIndex);
-    for(byte i=0u; i<DIM;i++) {
-      byte dings = AbcFrames[nextTestAnzeigeIndex][i] | B10000000;
-      Serial.println(dings, BIN);
-    }
-    Serial.println("--------------");
+    nextTestAnzeigeUpdate = systemZeit + LED_WECHSEL_ANZEIGE_MS;
     
-    Matrix.setFrame(AbcFrames[nextTestAnzeigeIndex]);
-    nextTestAnzeigeIndex++;
-    if (nextTestAnzeigeIndex >= ABC_FRAME_CNT){
-      nextTestAnzeigeIndex = 0u;
+    byte naechsteAnzeige[MARTIX_DIM];
+    for(byte i=0u; i<MARTIX_DIM; i++) {
+      naechsteAnzeige[i] = random(0, B00100000);
     }
+   
+    Matrix.setFrame(naechsteAnzeige);
     
   }
 
