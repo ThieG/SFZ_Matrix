@@ -28,7 +28,7 @@ unsigned long nextUpdateMatrix = 0u;
 unsigned long nextTestAnzeigeUpdate = 0u;
 
 
-const byte TestFrame[MARTIX_DIM] = {
+const byte TestFrame[MATRIX_DIM] = {
  B00100,
  B00100,
  B11011,
@@ -78,8 +78,8 @@ void loop() {
   if (systemZeit > nextTestAnzeigeUpdate) {
     nextTestAnzeigeUpdate = systemZeit + LED_WECHSEL_ANZEIGE_MS;
     
-    byte naechsteAnzeige[MARTIX_DIM];
-    for(byte i=0u; i<MARTIX_DIM; i++) {
+    byte naechsteAnzeige[MATRIX_DIM];
+    for(byte i=0u; i<MATRIX_DIM; i++) {
       naechsteAnzeige[i] = random(0, B00100000);
     }
    

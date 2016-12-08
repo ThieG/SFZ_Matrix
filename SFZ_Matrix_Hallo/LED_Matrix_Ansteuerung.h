@@ -3,11 +3,11 @@
 
 
 
-#define MARTIX_DIM   5 /* x/y dimension - 5x5 matrix */
+#define MATRIX_DIM   5 /* x/y dimension - 5x5 matrix */
 
 class LED_Matrix {
   private:
-    byte AktuelleAnzeige[MARTIX_DIM];
+    byte AktuelleAnzeige[MATRIX_DIM];
     byte Zeile;
 
   public:
